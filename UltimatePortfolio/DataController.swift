@@ -17,6 +17,10 @@ class DataController: ObservableObject {
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        container.persistentStoreDescriptions.first?.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+        NotificationCenter.default.addObserver(forName: .NSPersistentStoreRemoteChange, object: container.persistentStoreCoordinator, queue: .main, using: remoteStoreChanged)
         container.loadPersistentStores { (storeDescription, error) in
             if let error {
                 fatalError("Fatal error loading store: \(error.localizedDescription)")
@@ -72,7 +76,6 @@ class DataController: ObservableObject {
             NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [container.viewContext])
         }
     }
-    
     func deleteAll() {
         let request1: NSFetchRequest<NSFetchRequestResult> = Tag.fetchRequest()
         delete(request1)
@@ -80,6 +83,9 @@ class DataController: ObservableObject {
         let request2: NSFetchRequest<NSFetchRequestResult> = Issue.fetchRequest()
         delete(request2)
         save()
+    }
+    func remoteStoreChanged(_ notification: Notification) {
+        objectWillChange.send()
     }
 }
 

@@ -6,6 +6,7 @@
 //
 // added to GitHub 12/30/2025
 // added 5. Cleaning up Core Data on 1/1/2026.
+// added 6. Showing, deleting, and synchronizing issues on 1/1/2026.
 
 import SwiftUI
 import CoreData
