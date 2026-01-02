@@ -11,13 +11,14 @@ class DataController: ObservableObject {
     let container: NSPersistentCloudKitContainer
     @Published var selectedFilter: Filter? = Filter.all
     @Published var selectedIssue: Issue?
+    private var saveTask: Task<Void, Error>?
     init(inMemory: Bool = false) {
         container = NSPersistentCloudKitContainer(name: "Main")
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
         container.viewContext.automaticallyMergesChangesFromParent = true
-        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
         container.persistentStoreDescriptions.first?.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
         NotificationCenter.default.addObserver(forName: .NSPersistentStoreRemoteChange, object: container.persistentStoreCoordinator, queue: .main, using: remoteStoreChanged)
         container.loadPersistentStores { (storeDescription, error) in
@@ -68,7 +69,6 @@ class DataController: ObservableObject {
     func deleteAll() {
         let request1: NSFetchRequest<NSFetchRequestResult> = Tag.fetchRequest()
         delete(request1)
-        
         let request2: NSFetchRequest<NSFetchRequestResult> = Issue.fetchRequest()
         delete(request2)
         save()
@@ -82,6 +82,13 @@ class DataController: ObservableObject {
         let allTagsSet = Set(allTags)
         let difference = allTagsSet.symmetricDifference(issue.issueTags)
         return difference.sorted()
+    }
+    func queueSave() {
+        saveTask?.cancel()
+        saveTask = Task { @MainActor in
+            try await Task.sleep(for: .seconds(3))
+            save()
+        }
     }
 }
 

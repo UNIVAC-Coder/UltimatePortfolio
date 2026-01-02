@@ -8,12 +8,14 @@
 // added 5. Cleaning up Core Data on 1/1/2026.
 // added 6. Showing, deleting, and synchronizing issues on 1/1/2026.
 // added 7. Editing items on 1/1/2026
+// added 8. Instant sync and save
 import SwiftUI
 import CoreData
 
 @main
 struct UltimatePortfolioApp: App {
     @StateObject var dataController = DataController()
+    @Environment(\.scenePhase) var scenePhase
     var body: some Scene {
         WindowGroup {
             NavigationSplitView {
@@ -25,6 +27,11 @@ struct UltimatePortfolioApp: App {
             }
             .environment(\.managedObjectContext, dataController.container.viewContext)
             .environmentObject(dataController)
+            .onChange(of: scenePhase) { oldPhase, newPhase in
+                if newPhase != .active {
+                    dataController.save()
+                }
+            }
         }
     }
 }
