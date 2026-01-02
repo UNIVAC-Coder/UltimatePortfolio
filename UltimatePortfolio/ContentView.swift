@@ -22,20 +22,13 @@ struct ContentView: View {
         return allIssues.sorted()
     }
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Content View!")
-            List {
-                ForEach(issues) { issue in
-                    IssueRow(issue: issue)
-                }
-                .onDelete(perform: delete)
-                .navigationTitle(Text("Issues"))
+        List(selection: $dataController.selectedIssue) {
+            ForEach(issues) { issue in
+                IssueRow(issue: issue)
             }
+            .onDelete(perform: delete)
         }
-        .padding()
+        .navigationTitle(Text("Issues"))
     }
     func delete(_ offsets: IndexSet) {
         for offset in offsets {

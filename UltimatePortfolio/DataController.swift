@@ -7,11 +7,10 @@
 
 import CoreData
 import Combine
-
 class DataController: ObservableObject {
     let container: NSPersistentCloudKitContainer
     @Published var selectedFilter: Filter? = Filter.all
-    
+    @Published var selectedIssue: Issue?
     init(inMemory: Bool = false) {
         container = NSPersistentCloudKitContainer(name: "Main")
         if inMemory {
@@ -27,7 +26,6 @@ class DataController: ObservableObject {
             }
         }
     }
-
     func createSampleData() {
         let viewContext = container.viewContext
         for i in 1...5 {
@@ -47,26 +45,17 @@ class DataController: ObservableObject {
         }
         try? viewContext.save()
     }
-   /*
-    static var preview: DataController = {
-        let dataController = DataController(inMemory: true)
-        dataController.createSampleData()
-        return dataController
-    }()
-    */
     func save() {
         if container.viewContext.hasChanges {
             try? container.viewContext.save()
         }
     }
-    
     func delete(_ object: NSManagedObject) {
         objectWillChange.send()
         container.viewContext.delete(object)
         save()
         
     }
-    
     private func delete(_ fetchRequest: NSFetchRequest<NSFetchRequestResult>) {
         let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         batchDeleteRequest.resultType = .resultTypeObjectIDs
@@ -86,6 +75,13 @@ class DataController: ObservableObject {
     }
     func remoteStoreChanged(_ notification: Notification) {
         objectWillChange.send()
+    }
+    func missingTags(from issue: Issue) -> [Tag] {
+        let request = Tag.fetchRequest()
+        let allTags = (try? container.viewContext.fetch(request)) ?? []
+        let allTagsSet = Set(allTags)
+        let difference = allTagsSet.symmetricDifference(issue.issueTags)
+        return difference.sorted()
     }
 }
 
