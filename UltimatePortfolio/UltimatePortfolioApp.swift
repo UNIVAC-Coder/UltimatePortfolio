@@ -8,7 +8,8 @@
 // added 5. Cleaning up Core Data on 1/1/2026.
 // added 6. Showing, deleting, and synchronizing issues on 1/1/2026.
 // added 7. Editing items on 1/1/2026
-// added 8. Instant sync and save
+// added 8. Instant sync and save on 1/2/2026
+// added 9. Filtering issues on 1/2/2026
 import SwiftUI
 import CoreData
 
