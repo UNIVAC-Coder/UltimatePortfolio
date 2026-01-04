@@ -7,12 +7,24 @@
 
 import CoreData
 import Combine
+enum SortType: String {
+    case dateCreated = "creationDate"
+    case dateModified = "modificationDate"
+}
+enum Status {
+    case all, open, closed
+}
 class DataController: ObservableObject {
     let container: NSPersistentCloudKitContainer
     @Published var selectedFilter: Filter? = Filter.all
     @Published var selectedIssue: Issue?
     @Published var filterText = ""
     @Published var filterTokens = [Tag]()
+    @Published var filterEnabled = false
+    @Published var filterPriority = -1
+    @Published var filterStatus = Status.all
+    @Published var sortType = SortType.dateCreated
+    @Published var sortNewestFirst = true
     private var saveTask: Task<Void, Error>?
     var suggestedFilterTokens: [Tag] {
         guard filterText.starts(with: "#") else { return [] }
@@ -119,11 +131,25 @@ class DataController: ObservableObject {
             predicates.append(combinedPredicate)
         }
         if filterTokens.isEmpty == false {
-            let tokenPredicate = NSPredicate(format: "ANY tags IN %@", filterTokens)
-            predicates.append(tokenPredicate)
+            for filterToken in filterTokens {
+                let tokenPredicate = NSPredicate(format: "tags CONTAINS %@", filterToken)
+                predicates.append(tokenPredicate)
+            }
+        }
+        if filterEnabled {
+            if filterPriority >= 0 {
+                let priorityFilter = NSPredicate(format: "priority = %d", filterPriority)
+                predicates.append(priorityFilter)
+            }
+            if filterStatus != .all {
+                let lookForClosed = filterStatus == .closed
+                let statusFilter = NSPredicate(format: "completed = %@", NSNumber(value: lookForClosed))
+                predicates.append(statusFilter)
+            }
         }
         let request = Issue.fetchRequest()
         request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        request.sortDescriptors = [NSSortDescriptor(key: sortType.rawValue, ascending: sortNewestFirst)]
         let allIssues = (try? container.viewContext.fetch(request)) ?? []
         return allIssues.sorted()
     }

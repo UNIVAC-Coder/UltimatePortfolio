@@ -5,11 +5,12 @@
 //  Created by Thomas Cavalli on 12/29/25.
 //
 // added to GitHub 12/30/2025
-// added 5. Cleaning up Core Data on 1/1/2026.
-// added 6. Showing, deleting, and synchronizing issues on 1/1/2026.
-// added 7. Editing items on 1/1/2026
-// added 8. Instant sync and save on 1/2/2026
-// added 9. Filtering issues on 1/2/2026
+// added  5. Cleaning up Core Data on 1/1/2026.
+// added  6. Showing, deleting, and synchronizing issues on 1/1/2026.
+// added  7. Editing items on 1/1/2026
+// added  8. Instant sync and save on 1/2/2026
+// added  9. Filtering issues on 1/2/2026
+// added 10. Advanced filtering and sorting
 import SwiftUI
 import CoreData
 
