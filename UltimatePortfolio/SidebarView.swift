@@ -16,7 +16,9 @@ struct SidebarView: View {
         }
     }
     let smartFilter: [Filter] = [.all, .recent]
-    
+    @State private var tagToRename: Tag?
+    @State private var renamingTag = false
+    @State private var tagName: String = ""
     var body: some View {
         List(selection: $dataController.selectedFilter) {
             Section("Smart Filters") {
@@ -31,18 +33,35 @@ struct SidebarView: View {
                     NavigationLink(value: filter) {
                         Label(filter.name, systemImage: filter.icon)
                             .badge(filter.tag?.tagActiveIssues.count ?? 0)
+                            .contextMenu {
+                                Button {
+                                    rename(filter)
+                                } label: {
+                                    Label("Rename", systemImage: "pencil")
+                                }
+                            }
                     }
                 }
                 .onDelete(perform: delete)
             }
         }
         .toolbar {
+#if DEBUG
             Button {
                 dataController.deleteAll()
                 dataController.createSampleData()
             } label: {
                 Label("ADD SAMPLES", systemImage: "flame")
             }
+#endif
+            Button(action: dataController.newTag) {
+                Label("Add tag", systemImage: "plus")
+            }
+        }
+        .alert("Rename tag", isPresented: $renamingTag) {
+            Button("OK", action: completeRename)
+            Button("Cancel", role: .cancel) { }
+            TextField("New name", text: $tagName)
         }
     }
     func delete(_ offsets: IndexSet) {
@@ -50,6 +69,15 @@ struct SidebarView: View {
             let item = tags[offset]
             dataController.delete(item)
         }
+    }
+    func rename(_ filter: Filter) {
+        tagToRename = filter.tag
+        tagName = filter.name
+        renamingTag = true
+    }
+    func completeRename() {
+        tagToRename?.name = tagName
+        dataController.save()
     }
 }
 
