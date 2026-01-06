@@ -12,6 +12,7 @@
 // added  9. Filtering issues on 1/2/2026
 // added 10. Advanced filtering and sorting on 1/3/2026
 // added 12. Adding issues and tags on 1/4/2026
+// added 13. Reading awards JSON on 1/5/2026
 import SwiftUI
 import CoreData
 
