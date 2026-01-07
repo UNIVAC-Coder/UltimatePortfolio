@@ -14,6 +14,7 @@
 // added 12. Adding issues and tags on 1/4/2026
 // added 13. Reading awards JSON on 1/5/2026
 // added 14. Earning awards on 1/6/2026
+// added 15. Finishing our initial version on 1/6/2026
 import SwiftUI
 import CoreData
 
