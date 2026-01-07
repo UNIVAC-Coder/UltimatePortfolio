@@ -15,6 +15,8 @@
 // added 13. Reading awards JSON on 1/5/2026
 // added 14. Earning awards on 1/6/2026
 // added 15. Finishing our initial version on 1/6/2026
+// read  16. Now for the real work on 1/6/2026
+// added 17. Making your app accessible on 1/6/2026
 import SwiftUI
 import CoreData
 

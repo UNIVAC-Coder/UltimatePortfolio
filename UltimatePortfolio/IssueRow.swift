@@ -28,6 +28,7 @@ struct IssueRow: View {
                 VStack(alignment: .trailing) {
                     Text(issue.issueCreationDate.formatted(date: .numeric, time: .omitted))
                         .font(.subheadline)
+                        .accessibilityLabel(issue.issueCreationDate.formatted(date: .abbreviated, time: .omitted))
                     if issue.completed {
                         Text("CLOSED")
                             .font(.body.smallCaps())
@@ -36,5 +37,6 @@ struct IssueRow: View {
                 .foregroundStyle(.secondary)
             }
         }
+        .accessibilityHint(issue.priority == 2 ? "High priority" : "")
     }
 }
